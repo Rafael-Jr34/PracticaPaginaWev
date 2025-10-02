@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ejemplo HTML con TicTacToe</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #contenedorH1 {
+      margin: 20px;
+    }
+
+    /* Estilos del TicTacToe */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+
+    .cell {
+      background: #f0f0f0;
+      border: 2px solid #333;
+      font-size: 2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .cell.taken {
+      cursor: not-allowed;
+      background: #ddd;
+    }
+
+    #status {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Crear y Eliminar H1</h2>
+  <button onclick="crearH1()">Crear H1</button>
+  <button onclick="eliminarH1()">Eliminar H1</button>
+  <div id="contenedorH1"></div>
+
+  <hr>
+
+  <h2>Juego: Tic Tac Toe</h2>
+  <div class="board" id="board"></div>
+  <p id="status">Turno de: X</p>
+  <button onclick="reiniciar()">Reiniciar Juego</button>
+
+  <script>
+    // ---------------------
+    // Crear y eliminar H1
+    // ---------------------
+    function crearH1() {
+      const h1 = document.createElement("h1");
+      h1.textContent = "Hola Página";
+      document.getElementById("contenedorH1").appendChild(h1);
+    }
+
+    function eliminarH1() {
+      document.getElementById("contenedorH1").innerHTML = "";
+    }
+
+    // ---------------------
+    // Juego Tic Tac Toe
+    // ---------------------
+    const boardElement = document.getElementById("board");
+    const statusElement = document.getElementById("status");
+    let board = Array(9).fill(null);
+    let turno = "X";
+    let juegoTerminado = false;
+
+    function renderBoard() {
+      boardElement.innerHTML = "";
+      board.forEach((valor, index) => {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        if (valor) {
+          cell.textContent = valor;
+          cell.classList.add("taken");
+        }
+        cell.addEventListener("click", () => jugar(index));
+        boardElement.appendChild(cell);
+      });
+    }
+
+    function jugar(index) {
+      if (board[index] || juegoTerminado) return;
+      board[index] = turno;
+      if (verificarGanador()) {
+        statusElement.textContent = "Ganó: " + turno;
+        juegoTerminado = true;
+      } else if (board.every(cell => cell)) {
+        statusElement.textContent = "¡Empate!";
+        juegoTerminado = true;
+      } else {
+        turno = turno === "X" ? "O" : "X";
+        statusElement.textContent = "Turno de: " + turno;
+      }
+      renderBoard();
+    }
+
+    function verificarGanador() {
+      const combinaciones = [
+        [0,1,2], [3,4,5], [6,7,8], // filas
+        [0,3,6], [1,4,7], [2,5,8], // columnas
+        [0,4,8], [2,4,6]           // diagonales
+      ];
+      return combinaciones.some(([a,b,c]) => board[a] && board[a] === board[b] && board[a] === board[c]);
+    }
+
+    function reiniciar() {
+      board = Array(9).fill(null);
+      turno = "X";
+      juegoTerminado = false;
+      statusElement.textContent = "Turno de: X";
+      renderBoard();
+    }
+
+    // Inicializar tablero
+    renderBoard();
+  </script>
+</body>
+</html>
